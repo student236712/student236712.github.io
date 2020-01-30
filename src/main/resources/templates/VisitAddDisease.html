@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<title>Add new disease</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    html, body, h1, h2, h3, h4, h5, h6 {
+        font-family: "Roboto", sans-serif;
+    }
+
+    .w3-sidebar {
+        z-index: 3;
+        width: 250px;
+        top: 43px;
+        bottom: 0;
+        height: inherit;
+    }
+
+
+</style>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1"
+           href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+        <a href="#" class="w3-bar-item w3-button w3-theme-l1">Logo</a>
+        <a href="/" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Home</a>
+        <a href="/logout" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Logout</a>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+    <a href="javascript:void(0)" onclick="w3_close()"
+       class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+        <i class="fa fa-remove"></i>
+    </a>
+    <h4 class="w3-bar-item w3-xxlarge"><b>Menu</b></h4>
+    <h4 class="w3-bar-item w3-xlarge"><b>Visit</b></h4>
+    <h4 class="w3-bar-item w3-large"><b>Add disease to visit</b></h4>
+
+
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+     id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:250px">
+
+    <div class="w3-row w3-padding-64">
+        <div class="w3-row w3-container">
+            <h1 class="w3-text-teal">Select disease which you want add to this visit</h1>
+            <h4 class=" w3-text-teal">Here you received a list of diseases that status is chronic or
+                underway. Also you can create new disease after click on Add new disease button</h4>
+        </div>
+    </div>
+
+    <div class="w3-row w3-opacity w3-container w3-padding-24">
+        <div class="w3-third ">
+            <button class="w3-button w3-pale-blue  w3-round-xxlarge"
+                    type="submit"
+                    title="Go to previous site" onclick="history.back()">
+                Go back
+            </button>
+
+        </div>
+        <div class="w3-third ">
+            <form th:action="@{/api/disease/searchClassifications}" method="get">
+                <div th:object="${visitFound}">
+                    <input type="hidden" th:value="${visitFound.getVisitDate()}" th:field="*{visitDate}"/>
+                    <input type=hidden th:value="${visitFound.getPatient().getIndividualNumber()}"
+                           th:field="*{patient.individualNumber}"/>
+                    <input type=hidden th:value="${visitFound.getPatient().getId()}" th:field="*{patient.id}"/>
+                    <input type=hidden th:value="${visitFound.getPatient().getFirstName()}"
+                           th:field="*{patient.firstName}"/>
+                    <input type=hidden th:value="${visitFound.getPatient().getSurname()}"
+                           th:field="*{patient.surname}"/>
+                    <input type=hidden th:value="${visitFound.getDoctor().getId()}" th:field="*{doctor.id}"/>
+                    <input type=hidden th:value="${visitFound.getId()}" th:field="*{id}"/>
+                    <input type=hidden th:value="${visitFound.getDoctor().getPzwNumber()}"
+                           th:field="*{doctor.pzwNumber}"/>
+                    <button class="w3-button w3-teal  w3-round-xxlarge"
+                            type="submit"
+                            title="Add new disease">
+                        Add new disease
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="w3-row w3-padding-64">
+
+
+        <div class="w3-row w3-container">
+            <form th:action="@{/api/visit/addDiseaseToVisit}"
+                  method="post" class="w3-container w3-card-4"
+                  id="select1" th:object="${visitFound}">
+
+                <input type="hidden" th:value="${visitFound.getVisitDate()}" th:field="*{visitDate}"/>
+                <input type=hidden th:value="${visitFound.getPatient().getIndividualNumber()}"
+                       th:field="*{patient.individualNumber}"/>
+                <input type=hidden th:value="${visitFound.getPatient().getId()}" th:field="*{patient.id}"/>
+                <input type=hidden th:value="${visitFound.getPatient().getFirstName()}"
+                       th:field="*{patient.firstName}"/>
+                <input type=hidden th:value="${visitFound.getPatient().getSurname()}" th:field="*{patient.surname}"/>
+                <input type=hidden th:value="${visitFound.getDoctor().getId()}" th:field="*{doctor.id}"/>
+                <input type=hidden th:value="${visitFound.getId()}" th:field="*{id}"/>
+                <input type=hidden th:value="${visitFound.getDoctor().getPzwNumber()}"
+                       th:field="*{doctor.pzwNumber}"/>
+                <div th:object="${selectedDisease}">
+                    <table>
+
+                        <tr><input type="hidden" th:field="*{diseaseId}" id="diseaseId"></tr>
+                        <tr><input type="hidden" th:field="*{patient.id}" id="patient"></tr>
+                        <tr><input type="hidden" th:field="*{diseasesLibrary.icdCode}" id="library"></tr>
+
+                        <tr>
+                            <td>Start date</td>
+                            <td><input readonly id="diseaseStartDate" th:field="*{startDateString}"></td>
+                        </tr>
+                        <tr>
+                            <td>Name</td>
+                            <td><input id="diseaseName" size="100"></td>
+                        </tr>
+
+
+                    </table>
+                    <div class="w3-third">
+                        <button class="w3-button w3-block w3-green w3-section" title="Accept"
+                                type="submit" name="accept"><i
+                                class="fa fa-check"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+            <table class=" w3-table  w3-striped w3-border  w3-pale-blue" id="tableWithDiseases">
+                <tr>
+                    <th>Start date</th>
+                    <th>ICD code</th>
+                    <th>Name</th>
+                    <th>Status</th>
+
+                </tr>
+                <tr th:each="disease:${continuingPatientDiseases}" th:id="${disease.getDiseaseId()}">
+                    <td th:text="${disease.getStartDate()}">
+                    </td>
+                    <td th:text="${disease.getDiseasesLibrary().getIcdCode()}">
+                    </td>
+                    <td th:text="${disease.getDiseasesLibrary().getName()}"></td>
+                    <td th:text="${disease.getStatus()}"></td>
+
+                    <td th:text="${disease.getDiseaseId()}" style="display:none;"></td>
+                    <td th:text="${disease.getDiseasesLibrary().getIcdCode()}" style="display:none;"></td>
+                    <td th:text="${disease.getPatient().getId()}" style="display:none;"></td>
+                    <td th:text="${visitFound.getDoctor().getPzwNumber()}" style="display:none;"></td>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <footer id="myFooter">
+        <div class="w3-container w3-theme-l2 w3-padding-32">
+            <h4>Footer</h4>
+        </div>
+
+        <div class="w3-container w3-theme-l1">
+            <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+        </div>
+    </footer>
+
+    <!-- END MAIN -->
+</div>
+
+<script>
+    // Get the Sidebar
+    var mySidebar = document.getElementById("mySidebar");
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            overlayBg.style.display = "block";
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
+
+
+    }
+
+    var table = document.getElementById('tableWithDiseases'), rIndex;
+    for (var i = 1; i < table.rows.length; i++) {
+        table.rows[i].onclick = function () {
+
+            rIndex = this.rowIndex;
+
+            document.getElementById("diseaseStartDate").value = this.cells[0].innerHTML;
+
+
+            document.getElementById("diseaseName").value = this.cells[2].innerHTML;
+            document.getElementById("diseaseId").value = this.cells[4].innerHTML;
+            document.getElementById("library").value = this.cells[5].innerHTML;
+            document.getElementById("patient").value = this.cells[6].innerHTML;
+            document.getElementById("doctorPzwNumber").value = this.cells[7].innerHTML;
+        }
+    }
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<title>Whole history</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    html, body, h1, h2, h3, h4, h5, h6 {
+        font-family: "Roboto", sans-serif;
+    }
+
+    .w3-sidebar {
+        z-index: 3;
+        width: 250px;
+        top: 43px;
+        bottom: 0;
+        height: inherit;
+    }
+
+
+    .dropbtn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #3e8e41;
+    }
+
+    #myInput {
+        box-sizing: border-box;
+        background-image: url('searchicon.png');
+        background-position: 14px 12px;
+        background-repeat: no-repeat;
+        font-size: 16px;
+        padding: 14px 20px 12px 45px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    #myInput:focus {
+        outline: 3px solid #ddd;
+    }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f6f6f6;
+        min-width: 230px;
+        overflow: auto;
+        border: 1px solid #ddd;
+        z-index: 1;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dropdown a:hover {
+        background-color: #ddd;
+    }
+
+    .show {
+        display: block;
+    }
+
+
+</style>
+<body>
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+        <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1"
+           href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars"></i></a>
+        <a href="#" class="w3-bar-item w3-button w3-theme-l1">Logo</a>
+        <a href="/doctor" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Home</a>
+        <a href="/logout" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Logout</a>
+    </div>
+</div>
+
+<!-- Sidebar -->
+<nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+    <a href="javascript:void(0)" onclick="w3_close()"
+       class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+        <i class="fa fa-remove"></i>
+    </a>
+    <h4 class="w3-bar-item w3-xxlarge"><b>Menu</b></h4>
+    <h4 class="w3-bar-item w3-xlarge"><b>Visit</b></h4>
+    <h4 class="w3-bar-item w3-large"><b>Patient</b></h4>
+    <h4 class="w3-bar-item w3-large"><b>Whole diseases history</b></h4>
+    <form th:object="${patient}"
+          th:action="@{/api/history/showScatter}">
+        <input type="hidden" th:field="*{individualNumber}" th:value="${patient.getIndividualNumber()}">
+        <button class="w3-bar-item w3-button w3-hover-teal " type="submit">Show scatter chart
+        </button>
+    </form>
+</nav>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+     id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:250px">
+
+    <div class="w3-row w3-padding-64">
+        <div class="w3-row w3-container">
+            <h1 class="w3-text-teal">Here you received whole patient's diseases history</h1>
+            <h4 class=" w3-text-teal">For sort data please click appropriate column header. First click sort it
+                ascending, second descending</h4>
+        </div>
+    </div>
+
+
+    <div class="w3-row w3-padding-64">
+
+
+        <div class="w3-row w3-container w3-opacity w3-padding-12">
+            <div class="w3-padding-32">
+                <table class="w3-table w3-border">
+                    <h2>Diseases</h2>
+                    <tr>
+                        <th>Search for start date</th>
+                        <td>
+                            <input type="search" id="searchForStartDate"
+                                   onkeyup="filterFunction(0,'diseasesTable','searchForStartDate')"
+                                   placeholder="YYYY-mm-DD"></td>
+                    </tr>
+                    <tr>
+                        <th>Search for end date
+                        </th>
+
+
+                        <td>
+                            <input type="search" id="searchForEndDate"
+                                   onkeyup="filterFunction(1,'diseasesTable','searchForEndDate')"
+                                   placeholder="YYYY-mm-DD">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Search for icd code
+                        </th>
+                        <td>
+                            <input type="search" id="searchForIcdCode" size="100px"
+                                   onkeyup="filterFunction(2,'diseasesTable','searchForIcdCode')">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Search for category
+                        </th>
+                        <td>
+                            <input type="input" id="searchForCategory" class="w3-input w3-border"
+                                   list="diseasesCategories"
+                                   onkeyup="filterFunction(5,'diseasesTable','searchForCategory')">
+
+                            <datalist id="diseasesCategories">
+                                <option th:each="diseaseCategory:${patient.getDiseasesCategories()}"
+                                        th:value="${diseaseCategory}">
+
+                            </datalist>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Search for group
+                        </th>
+                        <td>
+                            <input type="search" id="searchForGroup" class="w3-input w3-border"
+                                   list="diseasesGroups"
+                                   onkeyup="filterFunction(6,'diseasesTable','searchForGroup')">
+
+                            <datalist id="diseasesGroups">
+                                <option th:each="diseaseGroup:${patient.getDiseasesGroups()}"
+                                        th:value="${diseaseGroup}">
+
+                            </datalist>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Search for classification
+                        </th>
+                        <td>
+                            <input type="search" id="searchForClassification" class="w3-input w3-border"
+                                   list="diseasesClassifications"
+                                   onkeyup="filterFunction(7,'diseasesTable','searchForClassification')">
+
+                            <datalist id="diseasesClassifications">
+                                <option th:each="diseaseClassification:${patient.getDiseasesClassifications()}"
+                                        th:value="${diseaseClassification}">
+
+                            </datalist>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="w3-padding-32">
+                <table class=" w3-table  w3-striped w3-border  w3-pale-blue" id="diseasesTable">
+
+                    <tr>
+                        <th onclick="sortTable(0,'diseasesTable')">Start date</th>
+                        <th onclick="sortTable(1,'diseasesTable')">End date</th>
+                        <th onclick="sortTable(2,'diseasesTable')">ICD code</th>
+                        <th>Name</th>
+                        <th onclick="sortTable(4,'diseasesTable')">Status</th>
+                        <th>Medicaments</th>
+                    </tr>
+
+                    <tr th:each="disease:${patient.getDiseases()}" th:id="${disease.getDiseaseId()}">
+                        <td th:text="${disease.getStartDate()}">
+                        </td>
+                        <td th:text="${disease.getEndDate()}">
+                        </td>
+
+                        <td th:text="${disease.getDiseasesLibrary().getIcdCode()}">
+                        </td>
+                        <td th:text="${disease.getDiseasesLibrary().getName()}"></td>
+
+
+                        <td th:text="${disease.getStatus()}"></td>
+                        <td th:text="${disease.getDiseasesLibrary().getDiseasesCategories().getDescription()}"
+                            style="display:none"></td>
+                        <td th:text="${disease.getDiseasesLibrary().getDiseasesCategories().getDiseasesGroups().getDescription()}"
+                            style="display:none"></td>
+                        <td th:text="${disease.getDiseasesLibrary().getDiseasesCategories().getDiseasesGroups().getDiseasesClassifications().getDescription()}"
+                            style="display:none"></td>
+                        <td th:if="${disease.getPrescriptionMedicaments().size() == 0}"></td>
+                        <td th:if="${disease.getPrescriptionMedicaments().size() != 0}">
+                            <div class="dropdown">
+                                <button th:value="${disease.getDiseaseId()}"
+                                        onclick="dropdownButton(this.value)"
+                                        class="w3-button w3-teal  w3-round-large">Medicates
+                                </button>
+                                <div th:id="${disease.getDiseaseId()}" class="dropdown-content">
+                                    <table>
+                                        <tr th:each="prescriptionMedicament:${disease.getPrescriptionMedicaments()}">
+                                            <td th:text="${prescriptionMedicament.getMedicament().getUsefulName()}"></td>
+                                            <td th:text="${prescriptionMedicament.getDose()}"></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="w3-padding-32">
+                <h2>Procedures</h2>
+                <table class="w3-table w3-border">
+
+                    <tr>
+                        <th>Search for performance date</th>
+                        <td>
+                            <input type="search" id="searchForPerformanceDate"
+                                   onkeyup="filterFunction(0,'proceduresTable','searchForPerformanceDate')"
+                                   placeholder="YYYY-mm-DD"></td>
+                    </tr>
+                    <tr>
+                        <th>Search for icd code
+                        </th>
+                        <td>
+                            <input type="search" id="searchForProcedureIcdCode"
+                                   onkeyup="filterFunction(2,'proceduresTable','searchForProcedureIcdCode')">
+                        </td>
+                    </tr>
+
+                    <tr>
+
+
+                        <th>Search for category
+                        </th>
+                        <td>
+                            <input type="input" id="searchForProcedureCategory" class="w3-input w3-border"
+                                   list="proceduresCategories"
+                                   onkeyup="filterFunction(3,'proceduresTable','searchForProcedureCategory')">
+
+                            <datalist id="proceduresCategories">
+                                <option th:each="procedureCategory:${patient.getProceduresCategories()}"
+                                        th:value="${procedureCategory}">
+
+                            </datalist>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Search for group
+                        </th>
+                        <td>
+                            <input type="search" id="searchForProcedureGroup" class="w3-input w3-border"
+                                   list="proceduresGroups" size="100px"
+                                   onkeyup="filterFunction(4,'proceduresTable','searchForProcedureGroup')">
+
+                            <datalist id="proceduresGroups">
+                                <option th:each="procedureGroup:${patient.getProceduresGroups()}"
+                                        th:value="${procedureGroup}">
+
+                            </datalist>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="w3-padding-32">
+                <table class=" w3-table  w3-striped w3-border  w3-pale-blue" id="proceduresTable">
+
+                    <tr>
+                        <th onclick="sortTable(0,'proceduresTable')">Performance date</th>
+                        <th onclick="sortTable(1,'proceduresTable')">Performance place</th>
+                        <th onclick="sortTable(2,'proceduresTable')">ICD code</th>
+                        <th>Name</th>
+                        <th>Result</th>
+
+                    </tr>
+                    <tr th:each="procedure:${patient.getProcedures()}">
+                        <td th:text="${procedure.getPerformanceDate()}">
+                        </td>
+
+                        <td th:if="${procedure.getHospitalTreatment()==null}" }>Private
+                            laboratory
+                        </td>
+                        <td th:if="${procedure.getHospitalTreatment()!= null}" }>Hospital</td>
+
+                        <td th:text="${procedure.getProceduresLibrary().getIcdCode()}">
+                        </td>
+                        <td th:text="${procedure.getProceduresLibrary().getProceduresCategories().getDescription()}"
+                            style="display:none"></td>
+                        <td th:text="${procedure.getProceduresLibrary().getProceduresCategories().getProceduresGroups().getDescription()}"
+                            style="display:none"></td>
+                        <td th:text="${procedure.getProceduresLibrary().getName()}"></td>
+                        <td th:if="${procedure.getResult()==0}"></td>
+                        <td th:if="${procedure.getResult()!=0}">
+                            <div class="dropdown">
+                                <button th:value="${procedure.getProcedureId()}"
+                                        onclick="dropdownButton(this.value)"
+                                        class="w3-button w3-teal  w3-round-large">More info
+                                </button>
+                                <div th:id="${procedure.getProcedureId()}" class="dropdown-content">
+                                    <table>
+                                        <tr>
+                                            <td>Result</td>
+                                            <td th:text="${procedure.getResult()}"></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Lower limit</td>
+                                            <td th:if="${patient.getGenderInt()==1}"
+                                                th:text="${procedure.getProceduresLibrary().getProceduresResultsModeler().getLowerLimitWomen()}">
+                                            </td>
+                                            <td th:if="${patient.getGenderInt()==0}"
+                                                th:text="${procedure.getProceduresLibrary().getProceduresResultsModeler().getLowerLimitMen()}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Upper limit</td>
+                                            <td th:if="${patient.getGenderInt()==1}"
+                                                th:text="${procedure.getProceduresLibrary().getProceduresResultsModeler().getUpperLimitWomen()}">
+                                            </td>
+                                            <td th:if="${patient.getGenderInt()==0}"
+                                                th:text="${procedure.getProceduresLibrary().getProceduresResultsModeler().getUpperLimitMen()}">
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>In limit</td>
+                                            <td th:if="${patient.getGenderInt()==1 && procedure.getProceduresLibrary().getProceduresResultsModeler().getLowerLimitWomen()
+                                        <
+                                        procedure.getResult()&&procedure.getProceduresLibrary().getProceduresResultsModeler().getUpperLimitWomen()
+                                        > procedure.getResult()}"
+                                                th:text="Yes" class="w3-text-light-green">
+                                            </td>
+                                            <td th:if="${(procedure.getProceduresLibrary().getProceduresResultsModeler().getLowerLimitWomen()
+                                        >
+                                        procedure.getResult() || procedure.getProceduresLibrary().getProceduresResultsModeler().getUpperLimitWomen()
+                                        < procedure.getResult()) && patient.getGenderInt()==1}"
+                                                th:text="No" class="w3-text-red">
+                                            </td>
+                                            <td th:if="${patient.getGenderInt()==0 && procedure.getProceduresLibrary().getProceduresResultsModeler().getLowerLimitMen()
+                                        <
+                                        procedure.getResult()&&procedure.getProceduresLibrary().getProceduresResultsModeler().getUpperLimitMen()
+                                        > procedure.getResult()}"
+                                                th:text="Yes" class="w3-text-light-green">
+                                            </td>
+                                            <td th:if="${(procedure.getProceduresLibrary().getProceduresResultsModeler().getLowerLimitMen() > procedure.getResult() || procedure.getResult() > procedure.getProceduresLibrary().getProceduresResultsModeler().getUpperLimitMen()
+                                            )&& patient.getGenderInt() == 0}"
+                                                th:text="No" class="w3-text-red">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <table class=" w3-table  w3-striped w3-border  w3-pale-blue" id="hospitalTreatmentTable">
+                    <h2>Hospital treatment</h2>
+                    <tr>
+                        <th onclick="sortTable(0,'hospitalTreatmentTable')">Admission date</th>
+                        <th onclick="sortTable(1,'hospitalTreatmentTable')">Discharge date</th>
+                        <th>Diagnosis</th>
+                    </tr>
+                    <tr th:each="hospitalTreatment:${patient.getHospitalTreatments()}">
+                        <td th:text="${hospitalTreatment.getAdmissionDate()}">
+                        </td>
+
+                        <td th:text="${hospitalTreatment.getDischargeDate()}">
+                        </td>
+
+                        <td>
+                        </td>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <footer id="myFooter">
+        <div class="w3-container w3-theme-l2 w3-padding-32">
+            <h4>Footer</h4>
+        </div>
+
+        <div class="w3-container w3-theme-l1">
+            <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+        </div>
+    </footer>
+
+    <!-- END MAIN -->
+</div>
+
+<script>
+    // Get the Sidebar
+    var mySidebar = document.getElementById("mySidebar");
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+            overlayBg.style.display = "none";
+        } else {
+            mySidebar.style.display = 'block';
+            overlayBg.style.display = "block";
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        mySidebar.style.display = "none";
+        overlayBg.style.display = "none";
+
+
+    }
+
+    function dropdownButton(buttonId) {
+        document.getElementById(buttonId).classList.toggle("show");
+
+    }
+
+    function sortTable(n, tableId) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById(tableId);
+        switching = true;
+        // Set the sorting direction to ascending:
+        dir = "asc";
+        /* Make a loop that will continue until
+        no switching has been done: */
+        while (switching) {
+            // Start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /* Loop through all table rows (except the
+            first, which contains table headers): */
+            for (i = 1; i < (rows.length - 1); i++) {
+                // Start by saying there should be no switching:
+                shouldSwitch = false;
+                /* Get the two elements you want to compare,
+                one from current row and one from the next: */
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+                /* Check if the two rows should switch place,
+                based on the direction, asc or desc: */
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        // If so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        // If so, mark as a switch and break the loop:
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /* If a switch has been marked, make the switch
+                and mark that a switch has been done: */
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                // Each time a switch is done, increase this count by 1:
+                switchcount++;
+            } else {
+                /* If no switching has been done AND the direction is "asc",
+                set the direction to "desc" and run the while loop again. */
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+
+    function filterFunction(n, tableId, inputId) {
+        // Declare variables
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById(inputId);
+        filter = input.value.toUpperCase();
+        table = document.getElementById(tableId);
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[n];
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+
+</script>
+
+</body>
+</html>
