@@ -1,7 +1,7 @@
 package diseases.history.DHapplication.Security;
 
-import diseases.history.DHapplication.Pomoc.Entity.User;
-import diseases.history.DHapplication.WarstwaIntegracji.UserRepo;
+import diseases.history.DHapplication.Objects.Entity.User;
+import diseases.history.DHapplication.IntegrationLayer.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

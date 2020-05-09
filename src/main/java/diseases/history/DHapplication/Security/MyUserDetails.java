@@ -1,6 +1,6 @@
 package diseases.history.DHapplication.Security;
 
-import diseases.history.DHapplication.Pomoc.Entity.User;
+import diseases.history.DHapplication.Objects.Entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
